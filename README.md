@@ -13,13 +13,13 @@ Outlook 2019 poses significant automation hurdles:
 2. **CDP (Chrome DevTools Protocol):** Enables Playwright to "attach" to the running WebView2 process inside Outlook on port `9222`.
 3. **Self-Healing Locators:** Implements a prioritized array of XPaths and W3C Action fallbacks (Ctrl+N) for resilient navigation.
 
-## 📋 Prerequisites
+## Prerequisites
 - Windows 10/11
 - [WinAppDriver](https://github.com/microsoft/WinAppDriver) (v1.2.1+)
 - Outlook 2016+
 - Node.js & Playwright
 
-## 🔧 Environment Setup
+## Environment Setup
 To enable Playwright to see the GIPHY add-in, the WebView2 debugging port must be active. Run the following in PowerShell before launching Outlook:
 
 ```powershell
