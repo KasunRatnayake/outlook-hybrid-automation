@@ -32,3 +32,5 @@ Start WinAppDriver.exe.
 Ensure Outlook is closed (the script will launch it).
 
 Run the POC:
+npm install
+npx ts-node src/poc.ts
