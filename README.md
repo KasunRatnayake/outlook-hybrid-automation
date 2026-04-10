@@ -1,4 +1,4 @@
-# Outlook 2016 Hybrid Automation POC
+# Outlook 2019+ Hybrid Automation POC
 
 This repository demonstrates a cross-platform automation strategy for legacy Win32 applications containing modern WebViews. It bridges **WinAppDriver** (for the Windows shell) and **Playwright** (for the GIPHY Add-in).
 
