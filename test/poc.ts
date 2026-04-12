@@ -1,4 +1,16 @@
 import { chromium, type Page } from '@playwright/test';
+import { Agent, fetch as undiciFetch } from 'undici';
+
+/**
+ * WinAppDriver often keeps the first `POST /session` open until Outlook finishes launching.
+ * Node's built-in `fetch` (undici) defaults to ~300s for response headers, which can abort
+ * a healthy but slow session start — use a longer window for session-creation calls only.
+ */
+const winAppDriverSessionDispatcher = new Agent({
+    connectTimeout: 120_000,
+    headersTimeout: 900_000,
+    bodyTimeout: 900_000
+});
 
 /**
  * WebView2 DevTools often answers on `localhost` only; `127.0.0.1` can time out while
@@ -247,7 +259,7 @@ async function runHybridPOC() {
 
     // app: 'Root' only attaches to the desktop — it does NOT start Outlook.
     // Use the Outlook EXE so WinAppDriver launches the application.
-    const sessionResponse = await fetch(`${baseUrl}/session`, {
+    const sessionResponse = await undiciFetch(`${baseUrl}/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -256,7 +268,8 @@ async function runHybridPOC() {
                 deviceName: 'WindowsPC',
                 app: outlookExe
             }
-        })
+        }),
+        dispatcher: winAppDriverSessionDispatcher
     });
 
     const sessionData = (await sessionResponse.json()) as {
@@ -762,7 +775,7 @@ async function runHybridPOC() {
             return false;
         }
         const hex = '0x' + hwndNum.toString(16);
-        const r2 = await fetch(`${baseUrl}/session`, {
+        const r2 = await undiciFetch(`${baseUrl}/session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -771,7 +784,8 @@ async function runHybridPOC() {
                     deviceName: 'WindowsPC',
                     appTopLevelWindow: hex
                 }
-            })
+            }),
+            dispatcher: winAppDriverSessionDispatcher
         });
         const d2 = (await r2.json()) as { sessionId?: string; value?: { message?: string } };
         if (!r2.ok || !d2.sessionId) {
@@ -814,7 +828,7 @@ async function runHybridPOC() {
         } catch {
             /* ignore */
         }
-        const r = await fetch(`${baseUrl}/session`, {
+        const r = await undiciFetch(`${baseUrl}/session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -823,7 +837,8 @@ async function runHybridPOC() {
                     deviceName: 'WindowsPC',
                     app: 'Root'
                 }
-            })
+            }),
+            dispatcher: winAppDriverSessionDispatcher
         });
         const d = (await r.json()) as { sessionId?: string; value?: { message?: string } };
         if (!r.ok || !d.sessionId) {

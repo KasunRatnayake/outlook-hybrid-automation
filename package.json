@@ -15,6 +15,7 @@
     "@types/node": "^25.5.2",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
+    "undici": "^6.24.1",
     "webdriverio": "^9.27.0"
   }
 }
